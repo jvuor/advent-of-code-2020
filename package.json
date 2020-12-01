@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "add": "tsc && node dist/index.js"
+    "add": "tsc && node dist/index.js",
+    "test": "jest --config ./jest.config.js"
   },
   "author": "",
   "license": "ISC",
