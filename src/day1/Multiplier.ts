@@ -22,8 +22,26 @@ export class Multiplier {
 
     for (let i = 0; i < entries.length; ++i) {
       for (let j = i + 1; j < entries.length; ++j) {
-        if (entries[i] + entries[j] === TARGET) {
+        if (i !== j && entries[i] + entries[j] === TARGET) {
           return [entries[i], entries[j]];
+        }
+      }
+    }
+
+    throw new Error('Correct combination not found');
+  }
+
+  private findThreeMultipliers(): number[] {
+    const minimum1 = findMinimum(this.entries);
+    const minumum2 = findMinimum(this.entries.filter(n => n !== minimum1));
+    const entries = this.entries.filter(e => e + minimum1 + minumum2 < TARGET);
+
+    for (let i = 0; i < entries.length; ++i) {
+      for (let j = i + 1; j < entries.length; ++j) {
+        for (let k = j + 1; k < entries.length; ++k) {
+          if (i !== j && i !== k && j !== k && entries[i] + entries[j] + entries[k] === TARGET) {
+            return [entries[i], entries[j], entries[k]];
+          }
         }
       }
     }
@@ -34,5 +52,10 @@ export class Multiplier {
   public getSolution(): void {
     const [a, b] = this.findMultipliers();
     console.log(`${a} * ${b} = ${a * b }`);
+  }
+
+  public getSolution2(): void {
+    const [a, b, c] = this.findThreeMultipliers();
+    console.log(`${a} * ${b} * ${c} = ${a * b * c}`);
   }
 }
