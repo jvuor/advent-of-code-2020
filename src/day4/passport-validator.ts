@@ -1,19 +1,20 @@
 import { exec } from 'child_process';
+import { passportDataValidator } from './data-validator';
 import { PassportKeyMandatory, PassportKeys } from './passport.model';
 
 export function processData(input: string): string[] {
   return input.split('\n\n');
 }
 
-export function passportValidator(testString: string): boolean {
-  const testKeys = testString
-    .match(/\w*:\w*/g)
+export function passportValidator(testString: string, strictMode = false): boolean {
+  const testSet = testString
+    .match(/\w*:(\w|#)*/g)
     ?.map(s => {
-      const key = /\w*/.exec(s)
-      return key && key[0] ? key[0] : '';
+      const [key, value] = s.split(':');
+      return [key, value];
     });
 
-  if (!testKeys) {
+  if (!testSet) {
     return false;
   }
 
@@ -24,17 +25,24 @@ export function passportValidator(testString: string): boolean {
     }
   })
 
-  testKeys.forEach(key => {
+  for (const [key, value] of testSet) {
     if (!Object.values(PassportKeys).includes(key as PassportKeys)) {
       return false;
     }
 
     if (expectedKeys.has(key)) {
       expectedKeys.delete(key);
-    } else {
+    } else if (PassportKeyMandatory.get(key as PassportKeys)) {
       return false;
     }
-  });
+
+    if (strictMode) {
+      const dataValid = passportDataValidator(key as PassportKeys, value);
+      if (!dataValid) {
+        return false;
+      }
+    }
+  };
 
   if (expectedKeys.size > 0) {
     return false;
