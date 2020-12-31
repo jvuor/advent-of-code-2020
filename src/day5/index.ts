@@ -10,12 +10,10 @@ const inputPasses = getInput()
 const passIds = inputPasses
   .map(pass => BoardingPassParser.parse(pass).id);
 
-const highestId = passIds
-  .reduce((max, cur) => cur > max ? cur : max, -Infinity);
-
-console.log(`Highest ID is ${highestId}`);
-
 passIds.sort((a, b) => a - b);
+
+console.log(`Highest ID is ${passIds[passIds.length - 1]}`);
+
 let previousId: number | null = null;
 
 for (const passId of passIds) {
